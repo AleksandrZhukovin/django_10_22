@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h1>{{ project.title }} <a href="/edit_project/{{ project.id }}">Edit</a></h1>
+    {% for i in tasks %}
+        <p>{{ i.text }}</p>
+    {% endfor %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit">
+    </form>
+</body>
+</html>
