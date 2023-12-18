@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from .forms import TaskCreateForm, RegistrationForm, LoginForm, ProjectForm, TestForm
 from django.contrib.auth import login, authenticate
 from .models import Project, Task
@@ -9,6 +9,10 @@ from django.views.generic.edit import CreateView, UpdateView, FormView
 from django.urls import reverse_lazy
 from django.contrib.auth.views import LoginView
 from django.views.generic.base import TemplateView
+from django.template.loader import render_to_string
+from pathlib import Path
+from django.core.files import File
+from .serializers import UserSerializer
 
 
 def registration(request):
@@ -69,12 +73,19 @@ def home(request):
 class Home(ListView):
     template_name = 'home.html'
     model = Project
-    context_object_name = 'projects'
+    paginate_by = 1
+    # context_object_name = 'projects'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
-
+    # def get_context_data(self, **kwargs):
+    #     # 10
+    #     context = super().get_context_data(**kwargs)
+    #     projects = Project.objects.all()
+    #     num = self.kwargs['num']
+    #     p = projects[(num - 1)*10: num*10]
+    #     context['projects'] = p
+    #     context['pages'] = len(projects) // 10 + 1
+    #     return context
+# REST
 
 def project_create(request):
     if request.method == 'POST':
@@ -106,6 +117,34 @@ def project(request, **kwargs):
         form = TaskCreateForm()
         context = {'form': form, 'tasks': tasks, 'project': project}
         return render(request, 'project.html', context)
+
+
+class ProjectPage(TemplateView):
+    template_name = 'project.html'
+
+    def get_success_url(self):
+        return f'/project/{self.kwargs["id"]}'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        project = Project.objects.get(id=self.kwargs['id'])
+        context['project'] = project
+        context['tasks'] = Task.objects.filter(project=project)
+        context['form'] = TaskCreateForm()
+        return context
+
+    def post(self, request, **kwargs):
+        data = request.POST
+        if len(data.keys()) == 5:
+            project = Project.objects.get(id=self.kwargs['id'])
+            task = Task(text=data['text'], )
+            task.save()
+            return JsonResponse({'resp': 'OK'})
+        elif len(data.keys()) == 2:
+            task = Task.ojects.get(id=int(data['id']))
+            resp = render_to_string('edit_form.html', {'form': TaskCreateForm(initial={'name': task.name,
+                                                                                       'status': task.status})})
+            return JsonResponse(resp, safe=False)
 
 
 def edit_project(request, **kwargs):
@@ -143,11 +182,25 @@ class FormPage(FormView):
 class TestPage(TemplateView):
     template_name = 'test.html'
 
-    def get_context_data(self, **kwargs):
+    def get(self, request, *args, **kwargs):
+        user = User.objects.all()
+        serializer = UserSerializer(user, many=True)
+        return JsonResponse(serializer.data, safe=False)
+
+    """def get_context_data(self, **kwargs):
         context = super().get_context_dat(**kwargs)
         context['title'] = 'Test Page'
+        context['name'] = 'Bob'
         return context
 
     def post(self, request):
         data = request.POST
-        print(data['test'])
+        resp = render_to_string('response.html', {'name': data['name']})
+        with open('app_10_22/static/images/file.png', 'wb') as file:
+            file.write(request.FILES['file'].read())
+        path = Path('app_10_22/static/images/file.png')
+        with path.open(mode='rb') as img:
+            file = File(img, name=img.name)
+            user.avatar = file
+            user.save()
+        return JsonResponse(resp, safe=False)"""""

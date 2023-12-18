@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 
 # class User(models.Model):
 #     name = models.CharField(max_length=30)
@@ -34,3 +34,14 @@ class Task(Abstract):
     deadline = models.DateField()
     number = models.OneToOneField()
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+
+
+class Photo(models.Model):
+    image = models.ImageField(upload_to='app_10_22/static/images')
+
+# username firstname lastname password email date role
+
+
+class User(AbstractUser):
+    avatar = models.ImageField(upload_to='app_10_22/static/images', default='app_10_22/static/images/default.png')
+    status = models.CharField(max_length=100)

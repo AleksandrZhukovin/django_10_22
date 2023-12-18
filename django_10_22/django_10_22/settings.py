@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'app_10_22.apps.App1022Config'
+    'app_10_22.apps.App1022Config',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [
@@ -126,3 +127,18 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = '/login'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/login'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'youremail@gmail.com'
+EMAIL_HOST_PASSWORD = ''
+EMAIL_USE_TLS = True
+
+AUTH_USER_MODEl = 'app_10_22.User'
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_REGEX_WHITELIST = []
+'[a-zA-Z0-9]@[a-z]/.[a-z]'

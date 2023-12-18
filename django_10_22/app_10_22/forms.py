@@ -33,6 +33,10 @@ class TaskCreateForm(forms.ModelForm):
     class Meta:
         model = Task
         fields = ['text', 'status', 'deadline', 'number']
+        widgets = {'text': forms.TextInput(attrs={'id': 'text'}),
+                   'status': forms.ChecboxInput(attrs={'id': 'status'}),
+                   'deadline': forms.DateInput(attrs={'id': 'deadline'}),
+                   'number': forms.NumberInput(attrs={'id': 'number'})}
 
 
 class TestForm(forms.Form):

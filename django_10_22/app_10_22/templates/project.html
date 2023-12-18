@@ -7,12 +7,14 @@
 <body>
     <h1>{{ project.title }} <a href="/edit_project/{{ project.id }}">Edit</a></h1>
     {% for i in tasks %}
-        <p>{{ i.text }}</p>
+        <div id="task{{ i.id }}">
+            <p>{{ i.text }} <button data-url="/project/{{ project.id }}/" class="edit_button" id="{{ i.id }}">Edit</button></p>
+        </div>
+
     {% endfor %}
-    <form method="post">
-        {% csrf_token %}
-        {{ form }}
-        <input type="submit">
-    </form>
+    {% csrf_token %}
+    {{ form }}
+    <input id="btn" type="submit" data-url="/project/{{ project.id }}/">
+
 </body>
 </html>
